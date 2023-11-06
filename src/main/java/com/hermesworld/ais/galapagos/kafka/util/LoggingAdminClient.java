@@ -19,7 +19,6 @@ public class LoggingAdminClient implements Admin {
 
     private final Admin delegate;
 
-
     public LoggingAdminClient(Admin delegate) {
         this.delegate = delegate;
     }
@@ -150,7 +149,8 @@ public class LoggingAdminClient implements Admin {
     }
 
     @Override
-    public AlterConfigsResult incrementalAlterConfigs(Map<ConfigResource, Collection<AlterConfigOp>> configs, AlterConfigsOptions options) {
+    public AlterConfigsResult incrementalAlterConfigs(Map<ConfigResource, Collection<AlterConfigOp>> configs,
+            AlterConfigsOptions options) {
         return delegate.incrementalAlterConfigs(configs, options);
     }
 
@@ -160,7 +160,8 @@ public class LoggingAdminClient implements Admin {
     }
 
     @Override
-    public AlterReplicaLogDirsResult alterReplicaLogDirs(Map<TopicPartitionReplica, String> replicaAssignment, AlterReplicaLogDirsOptions options) {
+    public AlterReplicaLogDirsResult alterReplicaLogDirs(Map<TopicPartitionReplica, String> replicaAssignment,
+            AlterReplicaLogDirsOptions options) {
         return delegate.alterReplicaLogDirs(replicaAssignment, options);
     }
 
@@ -180,7 +181,8 @@ public class LoggingAdminClient implements Admin {
     }
 
     @Override
-    public DescribeReplicaLogDirsResult describeReplicaLogDirs(Collection<TopicPartitionReplica> replicas, DescribeReplicaLogDirsOptions options) {
+    public DescribeReplicaLogDirsResult describeReplicaLogDirs(Collection<TopicPartitionReplica> replicas,
+            DescribeReplicaLogDirsOptions options) {
         return delegate.describeReplicaLogDirs(replicas, options);
     }
 
@@ -190,7 +192,8 @@ public class LoggingAdminClient implements Admin {
     }
 
     @Override
-    public CreatePartitionsResult createPartitions(Map<String, NewPartitions> newPartitions, CreatePartitionsOptions options) {
+    public CreatePartitionsResult createPartitions(Map<String, NewPartitions> newPartitions,
+            CreatePartitionsOptions options) {
         return delegate.createPartitions(newPartitions, options);
     }
 
@@ -200,7 +203,8 @@ public class LoggingAdminClient implements Admin {
     }
 
     @Override
-    public DeleteRecordsResult deleteRecords(Map<TopicPartition, RecordsToDelete> recordsToDelete, DeleteRecordsOptions options) {
+    public DeleteRecordsResult deleteRecords(Map<TopicPartition, RecordsToDelete> recordsToDelete,
+            DeleteRecordsOptions options) {
         return delegate.deleteRecords(recordsToDelete, options);
     }
 
@@ -245,7 +249,8 @@ public class LoggingAdminClient implements Admin {
     }
 
     @Override
-    public DescribeConsumerGroupsResult describeConsumerGroups(Collection<String> groupIds, DescribeConsumerGroupsOptions options) {
+    public DescribeConsumerGroupsResult describeConsumerGroups(Collection<String> groupIds,
+            DescribeConsumerGroupsOptions options) {
         return delegate.describeConsumerGroups(groupIds, options);
     }
 
@@ -265,7 +270,8 @@ public class LoggingAdminClient implements Admin {
     }
 
     @Override
-    public ListConsumerGroupOffsetsResult listConsumerGroupOffsets(String groupId, ListConsumerGroupOffsetsOptions options) {
+    public ListConsumerGroupOffsetsResult listConsumerGroupOffsets(String groupId,
+            ListConsumerGroupOffsetsOptions options) {
         return delegate.listConsumerGroupOffsets(groupId, options);
     }
 
@@ -275,7 +281,8 @@ public class LoggingAdminClient implements Admin {
     }
 
     @Override
-    public DeleteConsumerGroupsResult deleteConsumerGroups(Collection<String> groupIds, DeleteConsumerGroupsOptions options) {
+    public DeleteConsumerGroupsResult deleteConsumerGroups(Collection<String> groupIds,
+            DeleteConsumerGroupsOptions options) {
         return delegate.deleteConsumerGroups(groupIds, options);
     }
 
@@ -285,7 +292,8 @@ public class LoggingAdminClient implements Admin {
     }
 
     @Override
-    public DeleteConsumerGroupOffsetsResult deleteConsumerGroupOffsets(String groupId, Set<TopicPartition> partitions, DeleteConsumerGroupOffsetsOptions options) {
+    public DeleteConsumerGroupOffsetsResult deleteConsumerGroupOffsets(String groupId, Set<TopicPartition> partitions,
+            DeleteConsumerGroupOffsetsOptions options) {
         return delegate.deleteConsumerGroupOffsets(groupId, partitions, options);
     }
 
@@ -302,7 +310,8 @@ public class LoggingAdminClient implements Admin {
 
     @Override
     @Deprecated
-    public ElectPreferredLeadersResult electPreferredLeaders(Collection<TopicPartition> partitions, ElectPreferredLeadersOptions options) {
+    public ElectPreferredLeadersResult electPreferredLeaders(Collection<TopicPartition> partitions,
+            ElectPreferredLeadersOptions options) {
         return delegate.electPreferredLeaders(partitions, options);
     }
 
@@ -312,17 +321,21 @@ public class LoggingAdminClient implements Admin {
     }
 
     @Override
-    public ElectLeadersResult electLeaders(ElectionType electionType, Set<TopicPartition> partitions, ElectLeadersOptions options) {
+    public ElectLeadersResult electLeaders(ElectionType electionType, Set<TopicPartition> partitions,
+            ElectLeadersOptions options) {
         return delegate.electLeaders(electionType, partitions, options);
     }
 
     @Override
-    public AlterPartitionReassignmentsResult alterPartitionReassignments(Map<TopicPartition, Optional<NewPartitionReassignment>> reassignments) {
+    public AlterPartitionReassignmentsResult alterPartitionReassignments(
+            Map<TopicPartition, Optional<NewPartitionReassignment>> reassignments) {
         return delegate.alterPartitionReassignments(reassignments);
     }
 
     @Override
-    public AlterPartitionReassignmentsResult alterPartitionReassignments(Map<TopicPartition, Optional<NewPartitionReassignment>> reassignments, AlterPartitionReassignmentsOptions options) {
+    public AlterPartitionReassignmentsResult alterPartitionReassignments(
+            Map<TopicPartition, Optional<NewPartitionReassignment>> reassignments,
+            AlterPartitionReassignmentsOptions options) {
         return delegate.alterPartitionReassignments(reassignments, options);
     }
 
@@ -337,7 +350,8 @@ public class LoggingAdminClient implements Admin {
     }
 
     @Override
-    public ListPartitionReassignmentsResult listPartitionReassignments(Set<TopicPartition> partitions, ListPartitionReassignmentsOptions options) {
+    public ListPartitionReassignmentsResult listPartitionReassignments(Set<TopicPartition> partitions,
+            ListPartitionReassignmentsOptions options) {
         return delegate.listPartitionReassignments(partitions, options);
     }
 
@@ -347,22 +361,26 @@ public class LoggingAdminClient implements Admin {
     }
 
     @Override
-    public ListPartitionReassignmentsResult listPartitionReassignments(Optional<Set<TopicPartition>> partitions, ListPartitionReassignmentsOptions options) {
+    public ListPartitionReassignmentsResult listPartitionReassignments(Optional<Set<TopicPartition>> partitions,
+            ListPartitionReassignmentsOptions options) {
         return delegate.listPartitionReassignments(partitions, options);
     }
 
     @Override
-    public RemoveMembersFromConsumerGroupResult removeMembersFromConsumerGroup(String groupId, RemoveMembersFromConsumerGroupOptions options) {
+    public RemoveMembersFromConsumerGroupResult removeMembersFromConsumerGroup(String groupId,
+            RemoveMembersFromConsumerGroupOptions options) {
         return delegate.removeMembersFromConsumerGroup(groupId, options);
     }
 
     @Override
-    public AlterConsumerGroupOffsetsResult alterConsumerGroupOffsets(String groupId, Map<TopicPartition, OffsetAndMetadata> offsets) {
+    public AlterConsumerGroupOffsetsResult alterConsumerGroupOffsets(String groupId,
+            Map<TopicPartition, OffsetAndMetadata> offsets) {
         return delegate.alterConsumerGroupOffsets(groupId, offsets);
     }
 
     @Override
-    public AlterConsumerGroupOffsetsResult alterConsumerGroupOffsets(String groupId, Map<TopicPartition, OffsetAndMetadata> offsets, AlterConsumerGroupOffsetsOptions options) {
+    public AlterConsumerGroupOffsetsResult alterConsumerGroupOffsets(String groupId,
+            Map<TopicPartition, OffsetAndMetadata> offsets, AlterConsumerGroupOffsetsOptions options) {
         return delegate.alterConsumerGroupOffsets(groupId, offsets, options);
     }
 
@@ -372,7 +390,8 @@ public class LoggingAdminClient implements Admin {
     }
 
     @Override
-    public ListOffsetsResult listOffsets(Map<TopicPartition, OffsetSpec> topicPartitionOffsets, ListOffsetsOptions options) {
+    public ListOffsetsResult listOffsets(Map<TopicPartition, OffsetSpec> topicPartitionOffsets,
+            ListOffsetsOptions options) {
         return delegate.listOffsets(topicPartitionOffsets, options);
     }
 
@@ -382,7 +401,8 @@ public class LoggingAdminClient implements Admin {
     }
 
     @Override
-    public DescribeClientQuotasResult describeClientQuotas(ClientQuotaFilter filter, DescribeClientQuotasOptions options) {
+    public DescribeClientQuotasResult describeClientQuotas(ClientQuotaFilter filter,
+            DescribeClientQuotasOptions options) {
         return delegate.describeClientQuotas(filter, options);
     }
 
@@ -392,7 +412,8 @@ public class LoggingAdminClient implements Admin {
     }
 
     @Override
-    public AlterClientQuotasResult alterClientQuotas(Collection<ClientQuotaAlteration> entries, AlterClientQuotasOptions options) {
+    public AlterClientQuotasResult alterClientQuotas(Collection<ClientQuotaAlteration> entries,
+            AlterClientQuotasOptions options) {
         return delegate.alterClientQuotas(entries, options);
     }
 
@@ -407,7 +428,8 @@ public class LoggingAdminClient implements Admin {
     }
 
     @Override
-    public DescribeUserScramCredentialsResult describeUserScramCredentials(List<String> users, DescribeUserScramCredentialsOptions options) {
+    public DescribeUserScramCredentialsResult describeUserScramCredentials(List<String> users,
+            DescribeUserScramCredentialsOptions options) {
         return delegate.describeUserScramCredentials(users, options);
     }
 
@@ -417,7 +439,8 @@ public class LoggingAdminClient implements Admin {
     }
 
     @Override
-    public AlterUserScramCredentialsResult alterUserScramCredentials(List<UserScramCredentialAlteration> alterations, AlterUserScramCredentialsOptions options) {
+    public AlterUserScramCredentialsResult alterUserScramCredentials(List<UserScramCredentialAlteration> alterations,
+            AlterUserScramCredentialsOptions options) {
         return delegate.alterUserScramCredentials(alterations, options);
     }
 
@@ -432,7 +455,8 @@ public class LoggingAdminClient implements Admin {
     }
 
     @Override
-    public UpdateFeaturesResult updateFeatures(Map<String, FeatureUpdate> featureUpdates, UpdateFeaturesOptions options) {
+    public UpdateFeaturesResult updateFeatures(Map<String, FeatureUpdate> featureUpdates,
+            UpdateFeaturesOptions options) {
         return delegate.updateFeatures(featureUpdates, options);
     }
 

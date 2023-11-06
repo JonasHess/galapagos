@@ -52,8 +52,8 @@ public class ConnectedKafkaCluster implements KafkaCluster {
     private static final long MAX_POLL_TIME = Duration.ofSeconds(10).toMillis();
 
     public ConnectedKafkaCluster(String environmentId, KafkaRepositoryContainer repositoryContainer,
-                                 AdminClient adminClient, KafkaConsumerFactory<String, String> kafkaConsumerFactory,
-                                 KafkaFutureDecoupler futureDecoupler) {
+            AdminClient adminClient, KafkaConsumerFactory<String, String> kafkaConsumerFactory,
+            KafkaFutureDecoupler futureDecoupler) {
         this.environmentId = environmentId;
         this.adminClient = adminClient;
         this.repositoryContainer = repositoryContainer;
@@ -92,8 +92,8 @@ public class ConnectedKafkaCluster implements KafkaCluster {
 
             return deleteAcls.isEmpty() ? CompletableFuture.completedFuture(null)
                     : toCompletableFuture(adminClient
-                    .deleteAcls(deleteAcls.stream().map(acl -> acl.toFilter()).collect(Collectors.toList()))
-                    .all());
+                            .deleteAcls(deleteAcls.stream().map(acl -> acl.toFilter()).collect(Collectors.toList()))
+                            .all());
         }).thenCompose(o -> createAcls.isEmpty() ? CompletableFuture.completedFuture(null)
                 : toCompletableFuture(adminClient.createAcls(createAcls).all()));
     }
@@ -104,8 +104,7 @@ public class ConnectedKafkaCluster implements KafkaCluster {
         if (userName == null) {
             return FutureUtil.noop();
         }
-        return toCompletableFuture(
-                adminClient.deleteAcls(List.of(userAclFilter(userName, ResourceType.ANY))).all())
+        return toCompletableFuture(adminClient.deleteAcls(List.of(userAclFilter(userName, ResourceType.ANY))).all())
                 .thenApply(o -> null);
     }
 
@@ -227,20 +226,24 @@ public class ConnectedKafkaCluster implements KafkaCluster {
                             records.add(rec);
                         }
                     });
-                } catch (InterruptException | WakeupException e) {
+                }
+                catch (InterruptException | WakeupException e) {
                     break;
-                } catch (KafkaException e) {
+                }
+                catch (KafkaException e) {
                     result.completeExceptionally(e);
                     try {
                         consumer.close();
-                    } catch (Throwable t) {
+                    }
+                    catch (Throwable t) {
                     }
                     return;
                 }
             }
             try {
                 consumer.close();
-            } catch (Throwable t) {
+            }
+            catch (Throwable t) {
             }
             result.complete(records);
         };
@@ -257,10 +260,10 @@ public class ConnectedKafkaCluster implements KafkaCluster {
 
             return toCompletableFuture(adminClient.describeConfigs(
                     Set.of(new ConfigResource(Type.BROKER, nodeName))).all()).thenApply(map -> map
-                    .values().stream()
-                    .map(config -> config.get("inter.broker.protocol.version") == null ? "UNKNOWN_VERSION"
-                            : config.get("inter.broker.protocol.version").value())
-                    .findFirst().map(toVersionString).orElse("UNKNOWN_VERSION"));
+                            .values().stream()
+                            .map(config -> config.get("inter.broker.protocol.version") == null ? "UNKNOWN_VERSION"
+                                    : config.get("inter.broker.protocol.version").value())
+                            .findFirst().map(toVersionString).orElse("UNKNOWN_VERSION"));
         });
     }
 
