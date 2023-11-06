@@ -1,5 +1,6 @@
-package com.hermesworld.ais.galapagos.adminjobs.impl;
+package com.hermesworld.ais.galapagos.kafka.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.*;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.*;
@@ -13,17 +14,13 @@ import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Helper class used by admin jobs providing a "dry run". This class wraps an existing Kafka AdminClient and throws an
- * <code>UnsupportedOperationException</code> whenever a method is called which would modify something in the Kafka
- * cluster. Admin jobs subclass this class and override the calls they are interested in.
- */
-@SuppressWarnings("deprecation")
-public abstract class NoUpdatesAdminClient extends AdminClient {
+@Slf4j
+public class LoggingAdminClient implements Admin {
 
     private final Admin delegate;
 
-    public NoUpdatesAdminClient(Admin delegate) {
+
+    public LoggingAdminClient(Admin delegate) {
         this.delegate = delegate;
     }
 
@@ -45,22 +42,22 @@ public abstract class NoUpdatesAdminClient extends AdminClient {
 
     @Override
     public CreateTopicsResult createTopics(Collection<NewTopic> newTopics) {
-        throw new UnsupportedOperationException();
+        return delegate.createTopics(newTopics);
     }
 
     @Override
     public CreateTopicsResult createTopics(Collection<NewTopic> newTopics, CreateTopicsOptions options) {
-        throw new UnsupportedOperationException();
+        return delegate.createTopics(newTopics, options);
     }
 
     @Override
     public DeleteTopicsResult deleteTopics(Collection<String> topics) {
-        throw new UnsupportedOperationException();
+        return delegate.deleteTopics(topics);
     }
 
     @Override
     public DeleteTopicsResult deleteTopics(Collection<String> topics, DeleteTopicsOptions options) {
-        throw new UnsupportedOperationException();
+        return delegate.deleteTopics(topics, options);
     }
 
     @Override
@@ -105,22 +102,24 @@ public abstract class NoUpdatesAdminClient extends AdminClient {
 
     @Override
     public CreateAclsResult createAcls(Collection<AclBinding> acls) {
-        throw new UnsupportedOperationException();
+        return delegate.createAcls(acls);
     }
 
     @Override
     public CreateAclsResult createAcls(Collection<AclBinding> acls, CreateAclsOptions options) {
-        throw new UnsupportedOperationException();
+        return delegate.createAcls(acls, options);
     }
 
     @Override
     public DeleteAclsResult deleteAcls(Collection<AclBindingFilter> filters) {
-        throw new UnsupportedOperationException();
+        log.info("Deleting ACLs with filters " + filters);
+        return delegate.deleteAcls(filters);
     }
 
     @Override
     public DeleteAclsResult deleteAcls(Collection<AclBindingFilter> filters, DeleteAclsOptions options) {
-        throw new UnsupportedOperationException();
+        log.info("Deleting ACLs with filters " + filters);
+        return delegate.deleteAcls(filters, options);
     }
 
     @Override
@@ -136,35 +135,33 @@ public abstract class NoUpdatesAdminClient extends AdminClient {
     @Override
     @Deprecated
     public AlterConfigsResult alterConfigs(Map<ConfigResource, Config> configs) {
-        throw new UnsupportedOperationException();
+        return delegate.alterConfigs(configs);
     }
 
     @Override
     @Deprecated
     public AlterConfigsResult alterConfigs(Map<ConfigResource, Config> configs, AlterConfigsOptions options) {
-        throw new UnsupportedOperationException();
+        return delegate.alterConfigs(configs, options);
     }
 
     @Override
     public AlterConfigsResult incrementalAlterConfigs(Map<ConfigResource, Collection<AlterConfigOp>> configs) {
-        throw new UnsupportedOperationException();
+        return delegate.incrementalAlterConfigs(configs);
     }
 
     @Override
-    public AlterConfigsResult incrementalAlterConfigs(Map<ConfigResource, Collection<AlterConfigOp>> configs,
-            AlterConfigsOptions options) {
-        throw new UnsupportedOperationException();
+    public AlterConfigsResult incrementalAlterConfigs(Map<ConfigResource, Collection<AlterConfigOp>> configs, AlterConfigsOptions options) {
+        return delegate.incrementalAlterConfigs(configs, options);
     }
 
     @Override
     public AlterReplicaLogDirsResult alterReplicaLogDirs(Map<TopicPartitionReplica, String> replicaAssignment) {
-        throw new UnsupportedOperationException();
+        return delegate.alterReplicaLogDirs(replicaAssignment);
     }
 
     @Override
-    public AlterReplicaLogDirsResult alterReplicaLogDirs(Map<TopicPartitionReplica, String> replicaAssignment,
-            AlterReplicaLogDirsOptions options) {
-        throw new UnsupportedOperationException();
+    public AlterReplicaLogDirsResult alterReplicaLogDirs(Map<TopicPartitionReplica, String> replicaAssignment, AlterReplicaLogDirsOptions options) {
+        return delegate.alterReplicaLogDirs(replicaAssignment, options);
     }
 
     @Override
@@ -183,61 +180,58 @@ public abstract class NoUpdatesAdminClient extends AdminClient {
     }
 
     @Override
-    public DescribeReplicaLogDirsResult describeReplicaLogDirs(Collection<TopicPartitionReplica> replicas,
-            DescribeReplicaLogDirsOptions options) {
+    public DescribeReplicaLogDirsResult describeReplicaLogDirs(Collection<TopicPartitionReplica> replicas, DescribeReplicaLogDirsOptions options) {
         return delegate.describeReplicaLogDirs(replicas, options);
     }
 
     @Override
     public CreatePartitionsResult createPartitions(Map<String, NewPartitions> newPartitions) {
-        throw new UnsupportedOperationException();
+        return delegate.createPartitions(newPartitions);
     }
 
     @Override
-    public CreatePartitionsResult createPartitions(Map<String, NewPartitions> newPartitions,
-            CreatePartitionsOptions options) {
-        throw new UnsupportedOperationException();
+    public CreatePartitionsResult createPartitions(Map<String, NewPartitions> newPartitions, CreatePartitionsOptions options) {
+        return delegate.createPartitions(newPartitions, options);
     }
 
     @Override
     public DeleteRecordsResult deleteRecords(Map<TopicPartition, RecordsToDelete> recordsToDelete) {
-        throw new UnsupportedOperationException();
+        return delegate.deleteRecords(recordsToDelete);
     }
 
     @Override
-    public DeleteRecordsResult deleteRecords(Map<TopicPartition, RecordsToDelete> recordsToDelete,
-            DeleteRecordsOptions options) {
-        throw new UnsupportedOperationException();
+    public DeleteRecordsResult deleteRecords(Map<TopicPartition, RecordsToDelete> recordsToDelete, DeleteRecordsOptions options) {
+        return delegate.deleteRecords(recordsToDelete, options);
     }
 
     @Override
     public CreateDelegationTokenResult createDelegationToken() {
-        throw new UnsupportedOperationException();
+        return delegate.createDelegationToken();
     }
 
     @Override
     public CreateDelegationTokenResult createDelegationToken(CreateDelegationTokenOptions options) {
-        throw new UnsupportedOperationException();
+        return delegate.createDelegationToken(options);
     }
 
     @Override
     public RenewDelegationTokenResult renewDelegationToken(byte[] hmac) {
-        throw new UnsupportedOperationException();
+        return delegate.renewDelegationToken(hmac);
     }
 
     @Override
     public RenewDelegationTokenResult renewDelegationToken(byte[] hmac, RenewDelegationTokenOptions options) {
-        throw new UnsupportedOperationException();
+        return delegate.renewDelegationToken(hmac, options);
     }
 
     @Override
     public ExpireDelegationTokenResult expireDelegationToken(byte[] hmac) {
-        throw new UnsupportedOperationException();
+        return delegate.expireDelegationToken(hmac);
     }
 
     @Override
     public ExpireDelegationTokenResult expireDelegationToken(byte[] hmac, ExpireDelegationTokenOptions options) {
-        throw new UnsupportedOperationException();
+        return delegate.expireDelegationToken(hmac, options);
     }
 
     @Override
@@ -251,8 +245,7 @@ public abstract class NoUpdatesAdminClient extends AdminClient {
     }
 
     @Override
-    public DescribeConsumerGroupsResult describeConsumerGroups(Collection<String> groupIds,
-            DescribeConsumerGroupsOptions options) {
+    public DescribeConsumerGroupsResult describeConsumerGroups(Collection<String> groupIds, DescribeConsumerGroupsOptions options) {
         return delegate.describeConsumerGroups(groupIds, options);
     }
 
@@ -272,8 +265,7 @@ public abstract class NoUpdatesAdminClient extends AdminClient {
     }
 
     @Override
-    public ListConsumerGroupOffsetsResult listConsumerGroupOffsets(String groupId,
-            ListConsumerGroupOffsetsOptions options) {
+    public ListConsumerGroupOffsetsResult listConsumerGroupOffsets(String groupId, ListConsumerGroupOffsetsOptions options) {
         return delegate.listConsumerGroupOffsets(groupId, options);
     }
 
@@ -283,62 +275,55 @@ public abstract class NoUpdatesAdminClient extends AdminClient {
     }
 
     @Override
-    public DeleteConsumerGroupsResult deleteConsumerGroups(Collection<String> groupIds,
-            DeleteConsumerGroupsOptions options) {
-        throw new UnsupportedOperationException();
+    public DeleteConsumerGroupsResult deleteConsumerGroups(Collection<String> groupIds, DeleteConsumerGroupsOptions options) {
+        return delegate.deleteConsumerGroups(groupIds, options);
     }
 
     @Override
     public DeleteConsumerGroupsResult deleteConsumerGroups(Collection<String> groupIds) {
-        throw new UnsupportedOperationException();
+        return delegate.deleteConsumerGroups(groupIds);
     }
 
     @Override
-    public DeleteConsumerGroupOffsetsResult deleteConsumerGroupOffsets(String groupId, Set<TopicPartition> partitions,
-            DeleteConsumerGroupOffsetsOptions options) {
-        throw new UnsupportedOperationException();
+    public DeleteConsumerGroupOffsetsResult deleteConsumerGroupOffsets(String groupId, Set<TopicPartition> partitions, DeleteConsumerGroupOffsetsOptions options) {
+        return delegate.deleteConsumerGroupOffsets(groupId, partitions, options);
     }
 
     @Override
     public DeleteConsumerGroupOffsetsResult deleteConsumerGroupOffsets(String groupId, Set<TopicPartition> partitions) {
-        throw new UnsupportedOperationException();
+        return delegate.deleteConsumerGroupOffsets(groupId, partitions);
     }
 
     @Override
     @Deprecated
     public ElectPreferredLeadersResult electPreferredLeaders(Collection<TopicPartition> partitions) {
-        throw new UnsupportedOperationException();
+        return delegate.electPreferredLeaders(partitions);
     }
 
     @Override
     @Deprecated
-    public ElectPreferredLeadersResult electPreferredLeaders(Collection<TopicPartition> partitions,
-            ElectPreferredLeadersOptions options) {
-        throw new UnsupportedOperationException();
+    public ElectPreferredLeadersResult electPreferredLeaders(Collection<TopicPartition> partitions, ElectPreferredLeadersOptions options) {
+        return delegate.electPreferredLeaders(partitions, options);
     }
 
     @Override
     public ElectLeadersResult electLeaders(ElectionType electionType, Set<TopicPartition> partitions) {
-        throw new UnsupportedOperationException();
+        return delegate.electLeaders(electionType, partitions);
     }
 
     @Override
-    public ElectLeadersResult electLeaders(ElectionType electionType, Set<TopicPartition> partitions,
-            ElectLeadersOptions options) {
-        throw new UnsupportedOperationException();
+    public ElectLeadersResult electLeaders(ElectionType electionType, Set<TopicPartition> partitions, ElectLeadersOptions options) {
+        return delegate.electLeaders(electionType, partitions, options);
     }
 
     @Override
-    public AlterPartitionReassignmentsResult alterPartitionReassignments(
-            Map<TopicPartition, Optional<NewPartitionReassignment>> reassignments) {
-        throw new UnsupportedOperationException();
+    public AlterPartitionReassignmentsResult alterPartitionReassignments(Map<TopicPartition, Optional<NewPartitionReassignment>> reassignments) {
+        return delegate.alterPartitionReassignments(reassignments);
     }
 
     @Override
-    public AlterPartitionReassignmentsResult alterPartitionReassignments(
-            Map<TopicPartition, Optional<NewPartitionReassignment>> reassignments,
-            AlterPartitionReassignmentsOptions options) {
-        throw new UnsupportedOperationException();
+    public AlterPartitionReassignmentsResult alterPartitionReassignments(Map<TopicPartition, Optional<NewPartitionReassignment>> reassignments, AlterPartitionReassignmentsOptions options) {
+        return delegate.alterPartitionReassignments(reassignments, options);
     }
 
     @Override
@@ -352,8 +337,7 @@ public abstract class NoUpdatesAdminClient extends AdminClient {
     }
 
     @Override
-    public ListPartitionReassignmentsResult listPartitionReassignments(Set<TopicPartition> partitions,
-            ListPartitionReassignmentsOptions options) {
+    public ListPartitionReassignmentsResult listPartitionReassignments(Set<TopicPartition> partitions, ListPartitionReassignmentsOptions options) {
         return delegate.listPartitionReassignments(partitions, options);
     }
 
@@ -363,27 +347,23 @@ public abstract class NoUpdatesAdminClient extends AdminClient {
     }
 
     @Override
-    public ListPartitionReassignmentsResult listPartitionReassignments(Optional<Set<TopicPartition>> partitions,
-            ListPartitionReassignmentsOptions options) {
+    public ListPartitionReassignmentsResult listPartitionReassignments(Optional<Set<TopicPartition>> partitions, ListPartitionReassignmentsOptions options) {
         return delegate.listPartitionReassignments(partitions, options);
     }
 
     @Override
-    public RemoveMembersFromConsumerGroupResult removeMembersFromConsumerGroup(String groupId,
-            RemoveMembersFromConsumerGroupOptions options) {
-        throw new UnsupportedOperationException();
+    public RemoveMembersFromConsumerGroupResult removeMembersFromConsumerGroup(String groupId, RemoveMembersFromConsumerGroupOptions options) {
+        return delegate.removeMembersFromConsumerGroup(groupId, options);
     }
 
     @Override
-    public AlterConsumerGroupOffsetsResult alterConsumerGroupOffsets(String groupId,
-            Map<TopicPartition, OffsetAndMetadata> offsets) {
-        throw new UnsupportedOperationException();
+    public AlterConsumerGroupOffsetsResult alterConsumerGroupOffsets(String groupId, Map<TopicPartition, OffsetAndMetadata> offsets) {
+        return delegate.alterConsumerGroupOffsets(groupId, offsets);
     }
 
     @Override
-    public AlterConsumerGroupOffsetsResult alterConsumerGroupOffsets(String groupId,
-            Map<TopicPartition, OffsetAndMetadata> offsets, AlterConsumerGroupOffsetsOptions options) {
-        throw new UnsupportedOperationException();
+    public AlterConsumerGroupOffsetsResult alterConsumerGroupOffsets(String groupId, Map<TopicPartition, OffsetAndMetadata> offsets, AlterConsumerGroupOffsetsOptions options) {
+        return delegate.alterConsumerGroupOffsets(groupId, offsets, options);
     }
 
     @Override
@@ -392,8 +372,7 @@ public abstract class NoUpdatesAdminClient extends AdminClient {
     }
 
     @Override
-    public ListOffsetsResult listOffsets(Map<TopicPartition, OffsetSpec> topicPartitionOffsets,
-            ListOffsetsOptions options) {
+    public ListOffsetsResult listOffsets(Map<TopicPartition, OffsetSpec> topicPartitionOffsets, ListOffsetsOptions options) {
         return delegate.listOffsets(topicPartitionOffsets, options);
     }
 
@@ -403,20 +382,18 @@ public abstract class NoUpdatesAdminClient extends AdminClient {
     }
 
     @Override
-    public DescribeClientQuotasResult describeClientQuotas(ClientQuotaFilter clientQuotaFilter,
-            DescribeClientQuotasOptions describeClientQuotasOptions) {
-        return delegate.describeClientQuotas(clientQuotaFilter, describeClientQuotasOptions);
+    public DescribeClientQuotasResult describeClientQuotas(ClientQuotaFilter filter, DescribeClientQuotasOptions options) {
+        return delegate.describeClientQuotas(filter, options);
     }
 
     @Override
     public AlterClientQuotasResult alterClientQuotas(Collection<ClientQuotaAlteration> entries) {
-        throw new UnsupportedOperationException();
+        return delegate.alterClientQuotas(entries);
     }
 
     @Override
-    public AlterClientQuotasResult alterClientQuotas(Collection<ClientQuotaAlteration> collection,
-            AlterClientQuotasOptions alterClientQuotasOptions) {
-        throw new UnsupportedOperationException();
+    public AlterClientQuotasResult alterClientQuotas(Collection<ClientQuotaAlteration> entries, AlterClientQuotasOptions options) {
+        return delegate.alterClientQuotas(entries, options);
     }
 
     @Override
@@ -430,20 +407,18 @@ public abstract class NoUpdatesAdminClient extends AdminClient {
     }
 
     @Override
-    public DescribeUserScramCredentialsResult describeUserScramCredentials(List<String> list,
-            DescribeUserScramCredentialsOptions describeUserScramCredentialsOptions) {
-        return delegate.describeUserScramCredentials(list, describeUserScramCredentialsOptions);
+    public DescribeUserScramCredentialsResult describeUserScramCredentials(List<String> users, DescribeUserScramCredentialsOptions options) {
+        return delegate.describeUserScramCredentials(users, options);
     }
 
     @Override
     public AlterUserScramCredentialsResult alterUserScramCredentials(List<UserScramCredentialAlteration> alterations) {
-        throw new UnsupportedOperationException();
+        return delegate.alterUserScramCredentials(alterations);
     }
 
     @Override
-    public AlterUserScramCredentialsResult alterUserScramCredentials(List<UserScramCredentialAlteration> list,
-            AlterUserScramCredentialsOptions alterUserScramCredentialsOptions) {
-        throw new UnsupportedOperationException();
+    public AlterUserScramCredentialsResult alterUserScramCredentials(List<UserScramCredentialAlteration> alterations, AlterUserScramCredentialsOptions options) {
+        return delegate.alterUserScramCredentials(alterations, options);
     }
 
     @Override
@@ -452,14 +427,13 @@ public abstract class NoUpdatesAdminClient extends AdminClient {
     }
 
     @Override
-    public DescribeFeaturesResult describeFeatures(DescribeFeaturesOptions describeFeaturesOptions) {
-        return delegate.describeFeatures(describeFeaturesOptions);
+    public DescribeFeaturesResult describeFeatures(DescribeFeaturesOptions options) {
+        return delegate.describeFeatures(options);
     }
 
     @Override
-    public UpdateFeaturesResult updateFeatures(Map<String, FeatureUpdate> map,
-            UpdateFeaturesOptions updateFeaturesOptions) {
-        throw new UnsupportedOperationException();
+    public UpdateFeaturesResult updateFeatures(Map<String, FeatureUpdate> featureUpdates, UpdateFeaturesOptions options) {
+        return delegate.updateFeatures(featureUpdates, options);
     }
 
     @Override

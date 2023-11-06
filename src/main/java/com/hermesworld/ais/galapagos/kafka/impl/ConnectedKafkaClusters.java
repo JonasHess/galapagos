@@ -5,6 +5,7 @@ import com.hermesworld.ais.galapagos.kafka.KafkaClusters;
 import com.hermesworld.ais.galapagos.kafka.KafkaExecutorFactory;
 import com.hermesworld.ais.galapagos.kafka.auth.KafkaAuthenticationModule;
 import com.hermesworld.ais.galapagos.kafka.config.KafkaEnvironmentConfig;
+import com.hermesworld.ais.galapagos.kafka.util.LoggingAdminClient;
 import com.hermesworld.ais.galapagos.kafka.util.TopicBasedRepository;
 import com.hermesworld.ais.galapagos.util.HasKey;
 import org.springframework.util.ObjectUtils;
@@ -45,6 +46,7 @@ public class ConnectedKafkaClusters implements KafkaClusters {
                     envMeta.getId(), galapagosInternalPrefix, topicRepositoryReplicationFactor);
             ConnectedKafkaCluster cluster = buildConnectedKafkaCluster(envMeta.getId(), connectionManager,
                     repoContainer, futureDecoupler);
+            cluster.wrapAdminClient(admin -> new LoggingAdminClient(admin));
             clusters.put(envMeta.getId(), cluster);
             repoContainers.add(repoContainer);
         }

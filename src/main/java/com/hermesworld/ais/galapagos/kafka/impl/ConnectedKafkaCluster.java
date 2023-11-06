@@ -8,6 +8,7 @@ import com.hermesworld.ais.galapagos.kafka.util.KafkaTopicConfigHelper;
 import com.hermesworld.ais.galapagos.kafka.util.TopicBasedRepository;
 import com.hermesworld.ais.galapagos.util.FutureUtil;
 import com.hermesworld.ais.galapagos.util.HasKey;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.*;
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -33,11 +34,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class ConnectedKafkaCluster implements KafkaCluster {
 
     private final String environmentId;
 
-    private AdminClient adminClient;
+    private Admin adminClient;
 
     private final KafkaRepositoryContainer repositoryContainer;
 
@@ -50,8 +52,8 @@ public class ConnectedKafkaCluster implements KafkaCluster {
     private static final long MAX_POLL_TIME = Duration.ofSeconds(10).toMillis();
 
     public ConnectedKafkaCluster(String environmentId, KafkaRepositoryContainer repositoryContainer,
-            AdminClient adminClient, KafkaConsumerFactory<String, String> kafkaConsumerFactory,
-            KafkaFutureDecoupler futureDecoupler) {
+                                 AdminClient adminClient, KafkaConsumerFactory<String, String> kafkaConsumerFactory,
+                                 KafkaFutureDecoupler futureDecoupler) {
         this.environmentId = environmentId;
         this.adminClient = adminClient;
         this.repositoryContainer = repositoryContainer;
@@ -66,7 +68,7 @@ public class ConnectedKafkaCluster implements KafkaCluster {
      * @param wrapperFn Function returning a new AdminClient object which should wrap the existing AdminClient (passed
      *                  to the function). It is also valid to return the AdminClient object passed to this function.
      */
-    public void wrapAdminClient(Function<AdminClient, AdminClient> wrapperFn) {
+    public void wrapAdminClient(Function<Admin, Admin> wrapperFn) {
         this.adminClient = wrapperFn.apply(this.adminClient);
     }
 
@@ -90,20 +92,21 @@ public class ConnectedKafkaCluster implements KafkaCluster {
 
             return deleteAcls.isEmpty() ? CompletableFuture.completedFuture(null)
                     : toCompletableFuture(adminClient
-                            .deleteAcls(deleteAcls.stream().map(acl -> acl.toFilter()).collect(Collectors.toList()))
-                            .all());
+                    .deleteAcls(deleteAcls.stream().map(acl -> acl.toFilter()).collect(Collectors.toList()))
+                    .all());
         }).thenCompose(o -> createAcls.isEmpty() ? CompletableFuture.completedFuture(null)
                 : toCompletableFuture(adminClient.createAcls(createAcls).all()));
     }
 
     @Override
     public CompletableFuture<Void> removeUserAcls(KafkaUser user) {
-        if (user.getKafkaUserName() == null) {
+        String userName = user.getKafkaUserName();
+        if (userName == null) {
             return FutureUtil.noop();
         }
         return toCompletableFuture(
-                adminClient.deleteAcls(List.of(userAclFilter(user.getKafkaUserName(), ResourceType.ANY))).all())
-                        .thenApply(o -> null);
+                adminClient.deleteAcls(List.of(userAclFilter(userName, ResourceType.ANY))).all())
+                .thenApply(o -> null);
     }
 
     @Override
@@ -224,30 +227,41 @@ public class ConnectedKafkaCluster implements KafkaCluster {
                             records.add(rec);
                         }
                     });
-                }
-                catch (InterruptException | WakeupException e) {
+                } catch (InterruptException | WakeupException e) {
                     break;
-                }
-                catch (KafkaException e) {
+                } catch (KafkaException e) {
                     result.completeExceptionally(e);
                     try {
                         consumer.close();
-                    }
-                    catch (Throwable t) {
+                    } catch (Throwable t) {
                     }
                     return;
                 }
             }
             try {
                 consumer.close();
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
             }
             result.complete(records);
         };
 
         new Thread(r).start();
         return result;
+    }
+
+    @Override
+    public CompletableFuture<String> getKafkaServerVersion() {
+        Function<String, String> toVersionString = s -> !s.contains("-") ? s : s.substring(0, s.indexOf('-'));
+        return toCompletableFuture(adminClient.describeCluster().nodes()).thenCompose(coll -> {
+            String nodeName = coll.iterator().next().idString();
+
+            return toCompletableFuture(adminClient.describeConfigs(
+                    Set.of(new ConfigResource(Type.BROKER, nodeName))).all()).thenApply(map -> map
+                    .values().stream()
+                    .map(config -> config.get("inter.broker.protocol.version") == null ? "UNKNOWN_VERSION"
+                            : config.get("inter.broker.protocol.version").value())
+                    .findFirst().map(toVersionString).orElse("UNKNOWN_VERSION"));
+        });
     }
 
     private CompletableFuture<TopicCreateParams> buildCreateTopicParams(TopicDescription description) {
@@ -279,21 +293,6 @@ public class ConnectedKafkaCluster implements KafkaCluster {
 
     private <T> CompletableFuture<T> toCompletableFuture(KafkaFuture<T> kafkaFuture) {
         return futureDecoupler.toCompletableFuture(kafkaFuture);
-    }
-
-    @Override
-    public CompletableFuture<String> getKafkaServerVersion() {
-        Function<String, String> toVersionString = s -> !s.contains("-") ? s : s.substring(0, s.indexOf('-'));
-        return toCompletableFuture(adminClient.describeCluster().nodes()).thenCompose(coll -> {
-            String nodeName = coll.iterator().next().idString();
-
-            return toCompletableFuture(adminClient.describeConfigs(
-                    Set.of(new ConfigResource(Type.BROKER, nodeName))).all()).thenApply(map -> map
-                            .values().stream()
-                            .map(config -> config.get("inter.broker.protocol.version") == null ? "UNKNOWN_VERSION"
-                                    : config.get("inter.broker.protocol.version").value())
-                            .findFirst().map(toVersionString).orElse("UNKNOWN_VERSION"));
-        });
     }
 
 }
