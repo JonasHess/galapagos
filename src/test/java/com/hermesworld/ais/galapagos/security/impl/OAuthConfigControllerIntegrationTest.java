@@ -36,7 +36,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {OAuthConfigController.class, SecurityConfig.class, GalapagosSecurityProperties.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = { OAuthConfigController.class, SecurityConfig.class,
+        GalapagosSecurityProperties.class }, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @EnableAutoConfiguration(exclude = OAuth2ClientAutoConfiguration.class)
 class OAuthConfigControllerIntegrationTest {
 
@@ -67,7 +68,8 @@ class OAuthConfigControllerIntegrationTest {
                     return new MockResponse().setResponseCode(404);
                 }
                 if (recordedRequest.getPath().endsWith("/openid-configuration")) {
-                    return new MockResponse().setBody(readOpenidConfig()).setResponseCode(200).setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+                    return new MockResponse().setBody(readOpenidConfig()).setResponseCode(200)
+                            .setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
                 }
 
                 return new MockResponse().setResponseCode(404);
@@ -98,9 +100,10 @@ class OAuthConfigControllerIntegrationTest {
 
     @Test
     void test_getOauthConfig() {
-        ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/oauth2/config.json", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/oauth2/config.json",
+                String.class);
         assertTrue(response.getStatusCode().is2xxSuccessful());
-        
+
         JSONObject config = new JSONObject(response.getBody());
         assertEquals("test_username", config.get("userNameClaim"));
         assertEquals("my_roles", config.get("rolesClaim"));
@@ -109,9 +112,12 @@ class OAuthConfigControllerIntegrationTest {
     }
 
     private String readOpenidConfig() {
-        try (InputStream in = OAuthConfigControllerIntegrationTest.class.getClassLoader().getResourceAsStream("openid-config.json")) {
-            return StreamUtils.copyToString(in, StandardCharsets.UTF_8).replace("http://keycloak/", "http://localhost:" + oauthServer.getPort() + "/");
-        } catch (IOException e) {
+        try (InputStream in = OAuthConfigControllerIntegrationTest.class.getClassLoader()
+                .getResourceAsStream("openid-config.json")) {
+            return StreamUtils.copyToString(in, StandardCharsets.UTF_8).replace("http://keycloak/",
+                    "http://localhost:" + oauthServer.getPort() + "/");
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

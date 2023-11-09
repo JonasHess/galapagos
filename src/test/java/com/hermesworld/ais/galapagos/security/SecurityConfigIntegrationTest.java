@@ -27,7 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest(classes = {SecurityConfig.class, ApplicationsController.class, GalapagosSecurityProperties.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = { SecurityConfig.class, ApplicationsController.class,
+        GalapagosSecurityProperties.class }, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @EnableAutoConfiguration(exclude = OAuth2ClientAutoConfiguration.class)
 class SecurityConfigIntegrationTest {
 
@@ -64,7 +65,8 @@ class SecurityConfigIntegrationTest {
 
     @Test
     void test_apiAccessProtected() {
-        ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/api/me/requests", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/api/me/requests",
+                String.class);
         assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode().value());
     }
 
