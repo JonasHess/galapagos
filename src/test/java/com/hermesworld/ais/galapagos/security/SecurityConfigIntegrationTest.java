@@ -64,7 +64,7 @@ class SecurityConfigIntegrationTest {
 
     @Test
     void test_apiAccessProtected() {
-        ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/api/environments/test/changelog", String.class);
+        ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/api/me/requests", String.class);
         assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode().value());
     }
 
