@@ -1,6 +1,7 @@
 package com.hermesworld.ais.galapagos.kafka.impl;
 
 import com.hermesworld.ais.galapagos.kafka.KafkaCluster;
+import com.hermesworld.ais.galapagos.kafka.KafkaClusterAdminClient;
 import com.hermesworld.ais.galapagos.kafka.KafkaClusters;
 import com.hermesworld.ais.galapagos.kafka.KafkaExecutorFactory;
 import com.hermesworld.ais.galapagos.kafka.auth.KafkaAuthenticationModule;
@@ -30,8 +31,8 @@ public class ConnectedKafkaClusters implements KafkaClusters {
 
     public ConnectedKafkaClusters(List<KafkaEnvironmentConfig> environmentMetadata,
             Map<String, KafkaAuthenticationModule> authenticationModules, String productionEnvironmentId,
-            String galapagosInternalPrefix, KafkaExecutorFactory executorFactory,
-            int topicRepositoryReplicationFactor) {
+            String galapagosInternalPrefix, KafkaExecutorFactory executorFactory, int topicRepositoryReplicationFactor,
+            boolean logging) {
         this.environmentMetadata = environmentMetadata;
         this.productionEnvironmentId = productionEnvironmentId;
         this.authenticationModules = authenticationModules;
@@ -45,7 +46,7 @@ public class ConnectedKafkaClusters implements KafkaClusters {
             KafkaRepositoryContainerImpl repoContainer = new KafkaRepositoryContainerImpl(connectionManager,
                     envMeta.getId(), galapagosInternalPrefix, topicRepositoryReplicationFactor);
             ConnectedKafkaCluster cluster = buildConnectedKafkaCluster(envMeta.getId(), connectionManager,
-                    repoContainer, futureDecoupler);
+                    repoContainer, futureDecoupler, logging);
             cluster.wrapAdminClient(admin -> new LoggingAdminClient(admin));
             clusters.put(envMeta.getId(), cluster);
             repoContainers.add(repoContainer);
@@ -106,10 +107,15 @@ public class ConnectedKafkaClusters implements KafkaClusters {
 
     private static ConnectedKafkaCluster buildConnectedKafkaCluster(String environmentId,
             KafkaConnectionManager connectionManager, KafkaRepositoryContainer repositoryContainer,
-            KafkaFutureDecoupler futureDecoupler) {
-        return new ConnectedKafkaCluster(environmentId, repositoryContainer,
-                connectionManager.getAdminClient(environmentId), connectionManager.getConsumerFactory(environmentId),
-                futureDecoupler);
+            KafkaFutureDecoupler futureDecoupler, boolean logging) {
+        KafkaClusterAdminClient adminClient = new DefaultKafkaClusterAdminClient(
+                connectionManager.getAdminClient(environmentId));
+        if (logging) {
+            adminClient = new LoggingAdminClient(adminClient);
+        }
+
+        return new ConnectedKafkaCluster(environmentId, repositoryContainer, adminClient,
+                connectionManager.getConsumerFactory(environmentId), futureDecoupler);
     }
 
 }
