@@ -47,7 +47,6 @@ public class ConnectedKafkaClusters implements KafkaClusters {
                     envMeta.getId(), galapagosInternalPrefix, topicRepositoryReplicationFactor);
             ConnectedKafkaCluster cluster = buildConnectedKafkaCluster(envMeta.getId(), connectionManager,
                     repoContainer, futureDecoupler, logging);
-            cluster.wrapAdminClient(admin -> new LoggingAdminClient(admin));
             clusters.put(envMeta.getId(), cluster);
             repoContainers.add(repoContainer);
         }

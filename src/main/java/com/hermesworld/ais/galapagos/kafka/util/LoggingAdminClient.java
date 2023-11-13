@@ -21,6 +21,9 @@ public class LoggingAdminClient implements KafkaClusterAdminClient {
     private final KafkaClusterAdminClient delegate;
 
     public LoggingAdminClient(KafkaClusterAdminClient delegate) {
+        if (delegate instanceof LoggingAdminClient) {
+            throw new IllegalArgumentException("Cannot create a logging Admin Client on a logging Admin Client");
+        }
         this.delegate = delegate;
     }
 
