@@ -40,6 +40,10 @@ public class KafkaEnvironmentsConfig {
 
     @Getter
     @Setter
+    private Long adminClientRequestTimeout;
+
+    @Getter
+    @Setter
     private String metadataTopicsPrefix;
 
     @Getter
@@ -64,7 +68,8 @@ public class KafkaEnvironmentsConfig {
         }
 
         return new ConnectedKafkaClusters(new ArrayList<>(environments), authModules, productionEnvironment,
-                metadataTopicsPrefix, executorFactory, replicationFactor, logAdminOperations);
+                metadataTopicsPrefix, executorFactory, replicationFactor, logAdminOperations,
+                adminClientRequestTimeout);
     }
 
     private void validateConfig() {

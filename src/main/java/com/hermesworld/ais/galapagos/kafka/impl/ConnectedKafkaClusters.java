@@ -32,15 +32,15 @@ public class ConnectedKafkaClusters implements KafkaClusters {
     public ConnectedKafkaClusters(List<KafkaEnvironmentConfig> environmentMetadata,
             Map<String, KafkaAuthenticationModule> authenticationModules, String productionEnvironmentId,
             String galapagosInternalPrefix, KafkaExecutorFactory executorFactory, int topicRepositoryReplicationFactor,
-            boolean logging) {
+            boolean logging, Long adminClientRequestTimeout) {
         this.environmentMetadata = environmentMetadata;
         this.productionEnvironmentId = productionEnvironmentId;
         this.authenticationModules = authenticationModules;
 
         KafkaFutureDecoupler futureDecoupler = new KafkaFutureDecoupler(executorFactory);
 
-        this.connectionManager = new KafkaConnectionManager(environmentMetadata, authenticationModules,
-                futureDecoupler);
+        this.connectionManager = new KafkaConnectionManager(environmentMetadata, authenticationModules, futureDecoupler,
+                adminClientRequestTimeout);
 
         for (KafkaEnvironmentConfig envMeta : environmentMetadata) {
             KafkaRepositoryContainerImpl repoContainer = new KafkaRepositoryContainerImpl(connectionManager,
@@ -110,7 +110,7 @@ public class ConnectedKafkaClusters implements KafkaClusters {
         KafkaClusterAdminClient adminClient = new DefaultKafkaClusterAdminClient(
                 connectionManager.getAdminClient(environmentId));
         if (logging) {
-            adminClient = new LoggingAdminClient(adminClient);
+            adminClient = new LoggingAdminClient(environmentId, adminClient);
         }
 
         return new ConnectedKafkaCluster(environmentId, repositoryContainer, adminClient,

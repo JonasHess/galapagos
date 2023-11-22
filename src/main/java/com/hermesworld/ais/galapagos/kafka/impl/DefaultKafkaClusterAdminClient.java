@@ -59,7 +59,7 @@ public class DefaultKafkaClusterAdminClient implements KafkaClusterAdminClient {
 
     @Override
     public KafkaFuture<TopicDescription> describeTopic(String topicName) {
-        return admin.describeTopics(Set.of(topicName)).values().get(topicName);
+        return admin.describeTopics(Set.of(topicName)).topicNameValues().get(topicName);
     }
 
     @Override
